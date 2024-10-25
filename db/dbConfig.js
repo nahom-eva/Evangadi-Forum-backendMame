@@ -29,7 +29,6 @@
 
 // module.exports = dbConnection.promise();
 
-
 require("dotenv").config();
 const mysql2 = require("mysql2");
 
@@ -43,12 +42,21 @@ const dbConnection = mysql2.createPool({
   connectTimeout: 10000,  // 10 seconds
 });
 
-dbConnection.execute("SELECT 1", (err, results) => {
-  if (err) {
-    console.error("Database connection failed:", err.message);
-  } else {
-    console.log("Database connected successfully:", results);
-  }
-});
+// Create a function to test the connection
+function testConnection() {
+  return new Promise((resolve, reject) => {
+    dbConnection.execute("SELECT 1", (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+}
 
-module.exports = dbConnection.promise();
+// Make sure to export both dbConnection and testConnection
+module.exports = {
+  dbConnection: dbConnection.promise(),
+  testConnection,  // Export the testConnection function
+};
